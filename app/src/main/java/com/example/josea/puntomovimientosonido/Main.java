@@ -266,11 +266,4 @@ public class Main extends AppCompatActivity implements SensorEventListener {
 
         datos.add(coords);
     }
-
-	/// <summary>
-	/// Botón para el cierre de la aplicación.
-	/// </summary>
-    public void presionarCierre(){
-        System.exit(0);
-    }
 }
