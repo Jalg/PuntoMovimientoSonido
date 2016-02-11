@@ -1,9 +1,17 @@
 package com.example.josea.puntomovimientosonido;
 
 /*
-Autores: 
-    José Miguel Navarro Moreno
-    José Antonio Larrubia García
+    Copyright (C) 2016  José Miguel Navarro Moreno and José Antonio Larrubia García
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import android.hardware.Sensor;
@@ -26,61 +34,63 @@ import java.util.Locale;
 import java.util.Queue;
 import java.util.Scanner;
 
-/// <summary>
-/// Clase principal y única de la aplicación.
-/// Al pulsar el botón principal de la misma se comienza a detectar el movimiento, 
-/// si se detecta el movimiento metido en el fichero dentro de la carpeta raw se escuchará un sonido, 
-/// que también se encuentra dentro de la carpeta raw.
-/// Para realizar la aplicación nos hemos basado sobre todo en los siguientes enlaces.
-/// 1.- Código usado como base para generar el fichero para detectar el movimiento y el uso del acelerómetro:
-/// https://github.com/franciscovelez/DetectorDeGestos-Android
-/// 2.- Para la lectura de ficheros:
-/// https://docs.oracle.com/javase/7/docs/api/java/util/Scanner.html
-/// 3.- Para que se escuche el sonido:
-/// http://www.javaya.com.ar/androidya/detalleconcepto.php?codigo=152&inicio=20
-/// </summary>
+/**
+ *
+ * @Authors  José Miguel Navarro Moreno and José Antonio Larrubia García
+ *
+ * Clase principal y única de la aplicación.
+ * Al pulsar el botón principal de la misma se comienza a detectar el movimiento,
+ * si se detecta el movimiento metido en el fichero dentro de la carpeta raw se escuchará un sonido,
+ * que también se encuentra dentro de la carpeta raw.
+ * Para realizar la aplicación nos hemos basado sobre todo en los siguientes enlaces.
+ * 1.- Código usado como base para generar el fichero para detectar el movimiento y el uso del acelerómetro:
+ * https://github.com/franciscovelez/DetectorDeGestos-Android
+ * 2.- Para la lectura de ficheros:
+ * https://docs.oracle.com/javase/7/docs/api/java/util/Scanner.html
+ * 3.- Para que se escuche el sonido:
+ * http://www.javaya.com.ar/androidya/detalleconcepto.php?codigo=152&inicio=20
+ */
 public class Main extends AppCompatActivity implements SensorEventListener {
-	
-	/// <summary>
-	/// Controlador del sensor
-	/// </summary>
-    private SensorManager sm;         
-	
-	/// <summary>
-	/// Estructura para el acelerómetro
-	/// </summary>
-    private Sensor accel;	          
-	
-	/// <summary>
-	/// Controla el estado del programa (detectando o no el movimiento)
-	/// </summary>
-    private int estado;               
-	
-	/// <summary>
-	/// Reproductor de sonidos
-	/// </summary>
-    private MediaPlayer sonido = null;
-	
-    
-	/// <summary>
-	/// Estructura de datos para reconocer gestos final.
-	/// </summary>
-    private ArrayList<ArrayList<Float>> datos = new ArrayList<ArrayList<Float>>(); 
-	
-	/// <summary>
-	/// Estructuras de datos para reconocer gestos que usaremos de forma auxiliar al leer el fichero.
-	/// </summary>
-    private ArrayList<Float> guardados = new ArrayList<Float>(); 
-	
-	/// <summary>
-	/// Cola que almacena los últimos movimientos hechos por el usuario para detectar si es similar al nuestro.
-	/// </summary>
-    private Queue<ArrayList<Float>> buffer    = new ArrayDeque<ArrayList<Float>>(); 
 
-	/// <summary>
-	/// Función para iniciar la aplicación.
-	/// </summary>
-	/// <param name=" savedInstanceState "> Instancia de la aplicación, usada y pasada por android </param>
+    /**
+     *  Controlador del sensor
+     */
+    private SensorManager sm;         
+
+    /**
+     *  Estructura para el acelerómetro
+     */
+    private Sensor accel;
+
+    /**
+     *  Controla el estado del programa (detectando o no el movimiento)
+     */
+    private int estado;               
+
+    /**
+     *  Reproductor de sonidos
+     */
+    private MediaPlayer sonido = null;
+
+    /**
+     *  Estructura de datos para reconocer gestos final.
+     */
+    private ArrayList<ArrayList<Float>> datos = new ArrayList<ArrayList<Float>>();
+
+    /**
+     *  Estructuras de datos para reconocer gestos que usaremos de forma auxiliar al leer el fichero.
+     */
+    private ArrayList<Float> guardados = new ArrayList<Float>(); 
+
+    /**
+     *  Cola que almacena los últimos movimientos hechos por el usuario para detectar si es similar al nuestro.
+     */
+    private Queue<ArrayList<Float>> buffer    = new ArrayDeque<ArrayList<Float>>();
+
+    /**
+     * Función para iniciar la aplicación.
+     * @param savedInstanceState Instancia de la aplicación, usada y pasada por android
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,36 +107,42 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         leerFichero();
 
     }
-	
-	/// <summary>
-	/// Cuando la aplicación se pare se llamará a ésta función.
-	/// </summary>
+
+    /**
+     *  Cuando la aplicación se pare se llamará a ésta función.
+     */
     protected void onPause(){
         sm.unregisterListener(this);
         super.onPause();
     }
-	
-	/// <summary>
-	/// Cuando se pare la aplicación se llamará a ésta función.
-	/// </summary>
+
+    /**
+     *  Cuando se pare la aplicación se llamará a ésta función.
+     */
     protected void onStop()  { super.onStop();   }
-	
-	/// <summary>
-	/// Cuando vuelva de la pausa se llama a esta función
-	/// </summary>
+
+    /**
+     *  Cuando vuelva de la pausa se llama a esta función
+     */
     protected void onResume(){ super.onResume(); }
 
-	 
-	/// <summary>
-	/// Evento propio del sensor para detectar cambios de precisión en nuestro caso no la usamos pero hace falta que esté declarada.
-	/// </summary>
+    /**
+     * Método para destruir la aplicación cuando se cierra.
+     */
+    protected void onDestroy() { super.onDestroy();}
+
+    /**
+     *  Evento propio del sensor para detectar cambios de precisión en nuestro caso no la usamos pero hace falta que esté declarada.
+     * @param sensor sensor activo.
+     * @param accuracy precisión del cambio del sensor.
+     */
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) { }
 
-	/// <summary>
-	/// Evento del sensor, se llamará cuando se detecten nuevos datos(cambios) en el sensor.
-	/// </summary>
-	/// <param name=" event "> evento que usaremos para leer los valores del acelerómetro en la detección del movimiento </param>
+    /**
+     *  Evento del sensor, se llamará cuando se detecten nuevos datos(cambios) en el sensor.
+     * @param event evento que usaremos para leer los valores del acelerómetro en la detección del movimiento
+     */
     @Override
     public void onSensorChanged(SensorEvent event) {
         synchronized (this) {
@@ -137,10 +153,10 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         }
     }
 
-	/// <summary>
-	/// Botón que activa o desactiva el reconocimiento de movimientos (toggleButton iniciar/detener detector)
-	/// </summary>
-	/// <param name=" v "> Componente necesario para comprobar si está o no pulsado el botón </param>
+    /**
+     *  Botón que activa o desactiva el reconocimiento de movimientos (toggleButton iniciar/detener detector)
+     * @param v  Componente necesario para comprobar si está o no pulsado el botón
+     */
     public void reconocerMovimiento(View v){
         //Iniciar reconocimiento
         if(((CompoundButton) v).isChecked() && datos.size()>0){
@@ -156,10 +172,10 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         }
     }
 
-	/// <summary>
-	/// Almacena un movimiento cuando se estén reconocimendo gestos y determina si el gesto realizado es el mismo que el memorizado
-	/// </summary>
-	/// <param name=" event "> Pasado por onSensorChanged, contiene los valores del acelerómetro. </param>
+    /**
+     * Almacena un movimiento cuando se estén reconocimendo gestos y determina si el gesto realizado es el mismo que el memorizado
+     * @param event Pasado por onSensorChanged, contiene los valores del acelerómetro.
+     */
     private void detectarMovimiento(SensorEvent event){
         //Array para amacenar las tres coordenadas
         ArrayList<Float> coords       = new ArrayList<Float>(3);
@@ -179,9 +195,9 @@ public class Main extends AppCompatActivity implements SensorEventListener {
             buffer.add(coords);
     }
 
-	/// <summary>
-	/// Reconoce un gesto haciendo diferencia de cuadrados por coordenadas
-	/// </summary>
+    /**
+     *  Reconoce un gesto haciendo diferencia de cuadrados por coordenadas
+     */
     private void reconocimientoDifCuadrados(){
         //Sumas para hacer la diferencia de cuadrados.
 		float sumaX, sumaY, sumaZ;
@@ -218,9 +234,9 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         }
     }
 
-	/// <summary>
-	/// Función que se usa para leer el fichero con el movimiento almacenado.
-	/// </summary>
+    /**
+     *  Función que se usa para leer el fichero con el movimiento almacenado.
+     */
     public void leerFichero() {
 		//Iniciamos el scanner para leer el fichero.
         Scanner in = null;
@@ -251,10 +267,10 @@ public class Main extends AppCompatActivity implements SensorEventListener {
         }
     }
 
-	/// <summary>
-	/// Función para crear el movimiento final a partir del movimiento dado sin tener forma de coordenadas.
-	/// </summary>
-	/// <param name=" i "> Posición del arraylist auxiliar para coger los siguientes 3 datos para hacer las coordenadas.  </param>
+    /**
+     * Función para crear el movimiento final a partir del movimiento dado sin tener forma de coordenadas.
+     * @param i Posición del arraylist auxiliar para coger los siguientes 3 datos para hacer las coordenadas.
+     */
     public void crearMov(int i){
 		
 		//Array para amacenar las tres coordenadas
